@@ -19,6 +19,7 @@ Ext.define('CustomApp', {
     _byProjectRows: undefined,
     _byTypeRows: undefined,
     _byFeatureRows: undefined,
+    _byDefectRows: undefined,
 
     items: [{
             xtype: 'container',
@@ -244,7 +245,8 @@ Ext.define('CustomApp', {
                             console.log('defects and features loaded:', records);
                             this._buildSummaryProject();
                     		this._buildSummaryType();
-                    		this._buildSummaryFeature();
+                            this._buildSummaryFeature();
+                    		this._buildSummaryDefect();
                         },
                         failure: function(error) {
                             console.log('error:', error);
@@ -300,7 +302,8 @@ Ext.define('CustomApp', {
                 'Parent', 
                 'PercentDoneByStoryPlanEstimate', 
                 "_ValidFrom", 
-                "_ValidTo"],
+                "_ValidTo",
+                "Type"],
             hydrate: ['State', 'Project'],
             filters: initFilter,
             autoLoad: true,
@@ -366,7 +369,8 @@ Ext.define('CustomApp', {
                 'Parent', 
                 'PercentDoneByStoryPlanEstimate', 
                 "_ValidFrom", 
-                "_ValidTo"
+                "_ValidTo",
+                "Type"
             ],
             hydrate: ['State', 'Project'],
             filters: endFilter,
@@ -430,7 +434,8 @@ Ext.define('CustomApp', {
                 'ScheduleState',
                 'PlanEstimate',
                 "_ValidFrom",
-                "_ValidTo"
+                "_ValidTo",
+                "Type"
             ],
             hydrate: ['ScheduleState', 'Project'],
             filters: initFilter,
@@ -493,7 +498,8 @@ Ext.define('CustomApp', {
                 'Project',
                 'PlanEstimate',
                 "_ValidFrom",
-                "_ValidTo"
+                "_ValidTo",
+                "Type"
             ],
             hydrate: ['ScheduleState', 'Project'],
             filters: endFilter,
@@ -535,32 +541,32 @@ Ext.define('CustomApp', {
             columns: [{
                     text: 'Summary by Projects',
                     flex: 3,
-                    sortable: false,
+                    sortable: true,
                     dataIndex: 'projectName'
                 }, {
                     text: 'Total Start Day',
                     flex: 1,
-                    sortable: false,
+                    sortable: true,
                     dataIndex: 'totalStartDay'
                 }, {
                     text: 'Total End Day',
                     flex: 1,
-                    sortable: false,
+                    sortable: true,
                     dataIndex: 'totalEndDay'
                 }, {
                     text: 'Adds',
                     flex: 1,
-                    sortable: false,
+                    sortable: true,
                     dataIndex: 'adds'
                 }, {
                     text: 'Deletes',
                     flex: 1,
-                    sortable: false,
+                    sortable: true,
                     dataIndex: 'deletes'
                 }, {
                     text: '% Change',
                     flex: 1,
-                    sortable: false,
+                    sortable: true,
                     dataIndex: 'percChange'
                 }]
         });
@@ -611,32 +617,32 @@ Ext.define('CustomApp', {
             columns: [{
                     text: 'Summary by Type',
                     flex: 3,
-                    sortable: false,
+                    sortable: true,
                     dataIndex: 'typeName'
                 }, {
                     text: 'Total Start Day',
                     flex: 1,
-                    sortable: false,
+                    sortable: true,
                     dataIndex: 'totalStartDay'
                 }, {
                     text: 'Total End Day',
                     flex: 1,
-                    sortable: false,
+                    sortable: true,
                     dataIndex: 'totalEndDay'
                 }, {
                     text: 'Adds',
                     flex: 1,
-                    sortable: false,
+                    sortable: true,
                     dataIndex: 'adds'
                 }, {
                     text: 'Deletes',
                     flex: 1,
-                    sortable: false,
+                    sortable: true,
                     dataIndex: 'deletes'
                 }, {
                     text: '% Change',
                     flex: 1,
-                    sortable: false,
+                    sortable: true,
                     dataIndex: 'percChange'
                 }]
         });
@@ -687,33 +693,43 @@ Ext.define('CustomApp', {
             },
             columns: [{
                     text: 'Summary by Feature',
-                    flex: 3,
-                    sortable: false,
+                    flex: 1,
+                    sortable: true,
+                    dataIndex: 'featureNumber'
+                }, {
+                    text: 'Feature Name',
+                    flex: 2,
+                    sortable: true,
                     dataIndex: 'featureName'
+                }, {
+                    text: 'Project Name',
+                    flex: 1,
+                    sortable: true,
+                    dataIndex: 'projectName'
                 }, {
                     text: 'Total Start Day',
                     flex: 1,
-                    sortable: false,
+                    sortable: true,
                     dataIndex: 'totalStartDay'
                 }, {
                     text: 'Total End Day',
                     flex: 1,
-                    sortable: false,
+                    sortable: true,
                     dataIndex: 'totalEndDay'
                 }, {
                     text: 'Adds',
                     flex: 1,
-                    sortable: false,
+                    sortable: true,
                     dataIndex: 'adds'
                 }, {
                     text: 'Deletes',
                     flex: 1,
-                    sortable: false,
+                    sortable: true,
                     dataIndex: 'deletes'
                 }, {
                     text: '% Change',
                     flex: 1,
-                    sortable: false,
+                    sortable: true,
                     dataIndex: 'percChange'
                 }]
         });
@@ -743,6 +759,90 @@ Ext.define('CustomApp', {
         // this.down('#bodyContainer').removeAll(true);
         this.down('#bodyContainer').add(exportButton);
         this.down('#bodyContainer').add(summaryFeatureGrid);
+    },
+
+
+    _buildSummaryDefect: function() {
+        var store = this._createSummaryDefectStore();
+
+
+        var summaryDefectGrid = Ext.create('Ext.grid.Panel', {
+            store: store,
+            //height: 85,
+            margin: '20 0 0 0',
+            forceFit: true,
+            viewConfig: {
+                //stripeRows: true,
+                enableTextSelection: true
+            },
+            columns: [{
+                    text: 'Summary by Defect',
+                    flex: 1,
+                    sortable: true,
+                    dataIndex: 'defectNumber'
+                }, {
+                    text: 'Defect Name',
+                    flex: 2,
+                    sortable: true,
+                    dataIndex: 'defectName'
+                }, {
+                    text: 'Project Name',
+                    flex: 1,
+                    sortable: true,
+                    dataIndex: 'projectName'
+                }, {
+                    text: 'Total Start Day',
+                    flex: 1,
+                    sortable: true,
+                    dataIndex: 'totalStartDay'
+                }, {
+                    text: 'Total End Day',
+                    flex: 1,
+                    sortable: true,
+                    dataIndex: 'totalEndDay'
+                }, {
+                    text: 'Adds',
+                    flex: 1,
+                    sortable: true,
+                    dataIndex: 'adds'
+                }, {
+                    text: 'Deletes',
+                    flex: 1,
+                    sortable: true,
+                    dataIndex: 'deletes'
+                }, {
+                    text: '% Change',
+                    flex: 1,
+                    sortable: true,
+                    dataIndex: 'percChange'
+                }]
+        });
+
+        var exportButton = Ext.create('Rally.ui.Button', {
+            text: 'Export by Defect',
+            margin: '10 10 10 10',
+            scope: this,
+            handler: function() {
+                var csv = this._convertToCSV(this._byDefectRows);
+                console.log('converting to csv:', csv);
+
+
+                //Download the file as CSV
+                var downloadLink = document.createElement("a");
+                var blob = new Blob(["\ufeff", csv]);
+                var url = URL.createObjectURL(blob);
+                downloadLink.href = url;
+                downloadLink.download = "report.csv";  //Name the file here
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+                document.body.removeChild(downloadLink);
+            }
+        });
+        
+
+        // this.down('#bodyContainer').removeAll(true);
+        this.down('#bodyContainer').add(exportButton);
+        this.down('#bodyContainer').add(summaryDefectGrid);
 
         this._myMask.hide();
     },
@@ -775,21 +875,31 @@ Ext.define('CustomApp', {
 		_.each(this._initDefects, function(defect) {
     		//console.log('feature:', feature);
     		var defectId = defect.get('ObjectID');
-    		if (Ext.Array.contains(endIds, defectId)) {
-    			defectTotalStart += defect.get('PlanEstimate');
-    		} else {
+            var defectInitPoints = defect.get('PlanEstimate');
+			defectTotalStart += defectInitPoints;
+            
+            if (!Ext.Array.contains(endIds, defectId)) {
     			defectTotalDelete += defect.get('PlanEstimate');
-    		}
+            } else {
+                var endDefect = this._getEndFeatureByObjectId(defectId, this._endDefects);
+                var defectEndPoints = endDefect.get('PlanEstimate');
+                if (defectInitPoints > defectEndPoints) {
+                    defectTotalDelete += (defectInitPoints - defectEndPoints);
+                } else {
+                    defectTotalAdd += (defectEndPoints - defectInitPoints);
+                }
+            }
     	}, this);
 
 
     	_.each(this._endDefects, function(defect) {
     		//console.log('feature:', feature);
     		var defectId = defect.get('ObjectID');
-    		if (Ext.Array.contains(initIds, defectId)) {
-    			defectTotalEnd += defect.get('PlanEstimate');
-    		} else {
-    			defectTotalAdd += defect.get('PlanEstimate');
+            var defectEndPoints = defect.get('PlanEstimate');
+			defectTotalEnd += defect.get('PlanEstimate');
+
+            if (!Ext.Array.contains(initIds, defectId)) {
+    			defectTotalAdd += defectEndPoints;
     		}
     	}, this);
 
@@ -798,11 +908,11 @@ Ext.define('CustomApp', {
     	var defectPercChange = 0;
 
 		if (defectTotalEnd > defectTotalStart) {
-			defectPercChange = (100 - ((defectTotalEnd / defectTotalStart) *100)).toFixed(2) + '%';
+			defectPercChange = (((defectTotalEnd / defectTotalStart) - 1) * 100).toFixed(2) + '%';
 		} 
 
 		if (defectTotalStart > defectTotalEnd) {
-			defectPercChange = "-" + (100 - ((defectTotalEnd / defectTotalStart) * 100)).toFixed(2) + '%';
+			defectPercChange = (((defectTotalEnd / defectTotalStart) - 1) * 100).toFixed(2) + '%';
 		} 
 
 
@@ -858,31 +968,99 @@ Ext.define('CustomApp', {
     	}, this);
 
 
+        _.each(this._initDefects, function(defect) {
+            //console.log('feature:', feature);
+            var projectName = defect.get('Project').Name;
 
+            if (!mapProjectInit.containsKey(projectName)) {
+                var artifacts = [];
+                artifacts.push(defect);
+
+                mapProjectInit.add(projectName, artifacts);
+            } else {
+                mapProjectInit.get(projectName).push(defect);
+            }
+
+        }, this);
+
+
+        _.each(this._endDefects, function(defect) {
+            //console.log('feature:', feature);
+            var projectName = defect.get('Project').Name;
+
+            if (!mapProjectEnd.containsKey(projectName)) {
+                var artifacts = [];
+                artifacts.push(defect);
+
+                mapProjectEnd.add(projectName, artifacts);
+            } else {
+                mapProjectEnd.get(projectName).push(defect);
+            }
+
+        }, this);
 
 
     	mapProjectInit.eachKey(function(projectName, artifacts) {
-    		console.log('map init:', projectName, artifacts);
+    		// console.log('map init:', projectName, artifacts);
 
     		var totalStart = 0;
     		var totalEnd = 0;
 
+
+            var totalAdd = 0;
+            var totalDel = 0;
+
     		_.each(artifacts, function(feature) {
-    			totalStart += feature.get('LeafStoryPlanEstimateTotal');
+                var type = feature.get('FormattedID').startsWith('F') ? 'PortfolioItem/Feature' : 'Defect';
+                var featureId = feature.get('ObjectID');
+
+                var endFeature = this._getEndFeatureByObjectId(featureId, mapProjectEnd.get(projectName));
+                var initFeaturePoints = 0;
+                var endFeaturePoints = 0;
+                
+                if (type === "PortfolioItem/Feature") {
+                    initFeaturePoints = feature.get('LeafStoryPlanEstimateTotal');
+                    totalStart += initFeaturePoints;
+
+                    if (endFeature) {
+                        endFeaturePoints = endFeature.get('LeafStoryPlanEstimateTotal');
+                    } 
+                } else {
+                    initFeaturePoints = feature.get('PlanEstimate');
+                    totalStart += initFeaturePoints; 
+
+                    if (endFeature) {
+                        endFeaturePoints = endFeature.get('PlanEstimate');
+                    }           
+                }
+
+                if (endFeature) {
+                    // console.log('comparing:', feature.get('FormattedID'), initFeaturePoints, endFeaturePoints, totalStart, endFeature);
+                    
+                    if (endFeaturePoints > initFeaturePoints) {
+                        totalAdd += (endFeaturePoints - initFeaturePoints);
+                    } else {
+                        totalDel += (initFeaturePoints - endFeaturePoints);
+                    }
+
+                    // console.log('total added', totalAdd);
+                    // console.log('total removed', totalDel);                    
+                }
+
+
+
     		}, this);
 
+
+            totalAdd += this._getTotalPointsOfFeaturesAddedAfterInitDay(projectName, mapProjectEnd, mapProjectInit);
+            totalDel += this._getTotalPointsOfFeaturesRemovedBeforeEndDay(projectName, mapProjectInit, mapProjectEnd);
+
     		totalEnd = this._calculateTotalEndDay(projectName, mapProjectEnd);
-    		var adds = this._calculateAdds(totalStart, totalEnd);
-    		var deletes = this._calculateDeletes(totalStart, totalEnd);
+    		var adds = totalAdd;//this._calculateAdds(totalStart, totalEnd);
+    		var deletes = totalDel;//this._calculateDeletes(totalStart, totalEnd);
     		var percChange = 0;
 
-    		if (adds > 0 && deletes === 0) {
-    			percChange = ((adds / totalStart) *100).toFixed(2) + '%';
-    		} 
-
-    		if (deletes > 0 && adds === 0) {
-    			percChange = "-" + ((deletes / totalStart) * 100).toFixed(2) + '%';
-    		} 
+            percChange = (((totalEnd / totalStart) - 1) * 100).toFixed(2) + '%';
 
     		var row = {
     			projectName: projectName,
@@ -896,6 +1074,35 @@ Ext.define('CustomApp', {
     		rows.push(row);
 
     	}, this);
+
+
+        // console.log('map end:', mapProjectEnd);
+        //looking for projects not available at init, but present at end
+
+        mapProjectEnd.eachKey(function(projectName, artifacts) {
+            if (!mapProjectInit.containsKey(projectName)) {
+                console.log('project added at end:', projectName, artifacts);
+
+                var totalStart = 0;
+                var totalEnd = this._calculateTotalEndDay(projectName, mapProjectEnd);
+
+                var adds = this._calculateAdds(totalStart, totalEnd);
+                var deletes = this._calculateDeletes(totalStart, totalEnd);
+                var percChange = (adds * 100).toFixed(2) + '%';
+
+                var row = {
+                    projectName: projectName,
+                    totalStartDay: totalStart,
+                    totalEndDay: totalEnd,
+                    adds: adds,
+                    deletes: deletes,
+                    percChange: percChange
+                };
+
+                rows.push(row);
+            }
+
+        }, this);
 
     	console.log('rows', rows);
     	this._byProjectRows = rows;
@@ -912,6 +1119,108 @@ Ext.define('CustomApp', {
         store.loadData(rows);
 
 		return store;
+    },
+
+
+    _getEndFeatureByObjectId: function(objectId, endArtifacts) {
+        // console.log('Looking for artifact:', objectId);
+        var artifact;
+
+        _.each(endArtifacts, function(feature) {
+            if (feature.get('ObjectID') === objectId) {
+                // console.log('found:', feature);
+                artifact = feature;
+            }
+        }, this);
+
+        return artifact;
+
+    },
+
+
+    _getInitFeatureByObjectId: function(objectId, initArtifacts) {
+        // console.log('Looking for artifact:', objectId);
+        var artifact;
+
+        _.each(initArtifacts, function(feature) {
+            if (feature.get('ObjectID') === objectId) {
+                // console.log('found:', feature);
+                artifact = feature;
+            }
+        }, this);
+
+        return artifact;
+
+    },
+
+
+    _getTotalPointsOfFeaturesAddedAfterInitDay: function(projectName, mapProjectEnd, mapProjectInit) {
+        var total = 0;
+
+        console.log('looking for project:', projectName);
+
+        if (mapProjectEnd.containsKey(projectName)) {
+            var artifacts = mapProjectEnd.get(projectName);
+            // console.log('project found:', artifacts);
+
+            _.each(artifacts, function(artifact) {
+                var artifactId = artifact.get('ObjectID');
+
+                var initArtifact = this._getInitFeatureByObjectId(artifactId, mapProjectInit.get(projectName));
+
+                //artifact not present at init day
+                if (!initArtifact) {
+                    var type = artifact.get('FormattedID').startsWith('F') ? 'PortfolioItem/Feature' : 'Defect';
+                    var artifactPoints = 0;
+                    if (type === 'PortfolioItem/Feature') {
+                        artifactPoints = artifact.get('LeafStoryPlanEstimateTotal');
+                    } else {
+                        artifactPoints = artifact.get('PlanEstimate');
+                    }
+
+                    // console.log('artifact not found at init f/d', artifactPoints);
+
+                    total += artifactPoints;
+                }
+            }, this);
+        }
+
+        console.log('complete add points:', total);
+
+        return total;
+    },
+
+
+    _getTotalPointsOfFeaturesRemovedBeforeEndDay: function(projectName, mapProjectInit, mapProjectEnd) {
+        var total = 0;
+
+        if (mapProjectInit.containsKey(projectName)) {
+            var artifacts = mapProjectInit.get(projectName);
+            _.each(artifacts, function(artifact) {
+                var artifactId = artifact.get('ObjectID');
+
+                var endArtifact = this._getEndFeatureByObjectId(artifactId, mapProjectEnd.get(projectName));
+
+                //artifact not present at end day
+                if (!endArtifact) {
+                    var type = artifact.get('FormattedID').startsWith('F') ? 'PortfolioItem/Feature' : 'Defect';
+                    var artifactPoints = 0;
+                    if (type === 'PortfolioItem/Feature') {
+                        artifactPoints = artifact.get('LeafStoryPlanEstimateTotal');
+                    } else {
+                        artifactPoints = artifact.get('PlanEstimate');
+                    }
+
+                    total += artifactPoints;
+                }
+            }, this);
+        }
+
+
+        console.log('complete del points:', total);
+
+
+        return total;
     },
 
 
@@ -940,37 +1249,43 @@ Ext.define('CustomApp', {
 
 
 		_.each(this._initFeatures, function(feature) {
-    		//console.log('feature:', feature);
-    		var featureId = feature.get('ObjectID');
-    		if (Ext.Array.contains(endIds, featureId)) {
-    			featureTotalStart += feature.get('LeafStoryPlanEstimateTotal');
-    		} else {
-    			featureTotalDelete += feature.get('LeafStoryPlanEstimateTotal');
-    		}
+            var featureId = feature.get('ObjectID');
+            var featureInitPoints = feature.get('LeafStoryPlanEstimateTotal');
+            featureTotalStart += featureInitPoints;
+
+            if (!Ext.Array.contains(endIds, featureId)) {
+                featureTotalDelete += feature.get('LeafStoryPlanEstimateTotal');
+            } else {
+                var endFeat = this._getEndFeatureByObjectId(featureId, this._endFeatures);
+                var featureEndPoints = endFeat.get('LeafStoryPlanEstimateTotal');
+
+                if (featureInitPoints > featureEndPoints) {
+                    featureTotalDelete += (featureInitPoints - featureEndPoints);
+                } else {
+                    featureTotalAdd += (featureEndPoints - featureInitPoints);
+                }
+            }
     	}, this);
 
 
     	_.each(this._endFeatures, function(feature) {
     		//console.log('feature:', feature);
     		var featureId = feature.get('ObjectID');
-    		if (Ext.Array.contains(initIds, featureId)) {
-    			featureTotalEnd += feature.get('LeafStoryPlanEstimateTotal');
-    		} else {
+			featureTotalEnd += feature.get('LeafStoryPlanEstimateTotal');
+            if (!Ext.Array.contains(initIds, featureId)) {
     			featureTotalAdd += feature.get('LeafStoryPlanEstimateTotal');
     		}
     	}, this);
 
 
-
-    	//TODO Check with stephanie how to calculate this.s
     	var featurePercChange = 0;
 
 		if (featureTotalEnd > featureTotalStart) {
-			featurePercChange = (100 - ((featureTotalEnd / featureTotalStart) *100)).toFixed(2) + '%';
+			featurePercChange = (((featureTotalEnd / featureTotalStart) - 1) * 100).toFixed(2) + '%';
 		} 
 
-		if (featureTotalStart >featureTotalEnd) {
-			featurePercChange = "-" + (100 - ((featureTotalEnd / featureTotalStart) * 100)).toFixed(2) + '%';
+		if (featureTotalStart > featureTotalEnd) {
+			featurePercChange = (((featureTotalEnd / featureTotalStart) - 1) * 100).toFixed(2) + '%';
 		} 
 
 
@@ -1023,6 +1338,21 @@ Ext.define('CustomApp', {
     },
 
 
+    _getDefectRow: function() {
+        var row = {
+            defectName: '',
+            defectTotalStart: 0,
+            defectTotalEnd: 0,
+            adds: 0,
+            deletes: 0,
+            percChange: ''
+        };
+
+        return row;
+    },
+
+
+
     _createSummaryFeatureStore: function() {
     	var rows = [];
 
@@ -1048,8 +1378,10 @@ Ext.define('CustomApp', {
 				allFeatures.get(featureId)['featureTotalStart'] = feature.get('LeafStoryPlanEstimateTotal');
 			} else {
 				var row = this._getFeatureRow();
-				row['featureName'] = feature.get('FormattedID') + ' - ' + feature.get('Name');
+                row['featureNumber'] = feature.get('FormattedID');
+				row['featureName'] = feature.get('Name');
 				row['featureTotalStart'] = feature.get('LeafStoryPlanEstimateTotal');
+                row['projectName'] = feature.get('Project').Name;
 
 				//console.log('row init:', row);
 				allFeatures.add(featureId, row);
@@ -1069,8 +1401,10 @@ Ext.define('CustomApp', {
 				allFeatures.get(featureId)['featureTotalEnd'] = feature.get('LeafStoryPlanEstimateTotal');
 			} else {				
 				var row = this._getFeatureRow();
-				row['featureName'] = feature.get('FormattedID') + ' - ' + feature.get('Name');
+				row['featureNumber'] = feature.get('FormattedID');
+                row['featureName'] = feature.get('Name');
 				row['featureTotalEnd'] = feature.get('LeafStoryPlanEstimateTotal');
+                row['projectName'] = feature.get('Project').Name;
 
 				console.log('complete add, not available at init', row);
 				allFeatures.add(featureId, row);
@@ -1107,7 +1441,7 @@ Ext.define('CustomApp', {
 
 
     	allFeatures.eachKey(function(featureId, row) {
-    		console.log('map features:', featureId, row);
+    		// console.log('map features:', featureId, row);
 
     		var totalStart = row['featureTotalStart'];
     		var totalEnd = row['featureTotalEnd'];
@@ -1130,7 +1464,9 @@ Ext.define('CustomApp', {
 
 
     		var featureRow = {
+                featureNumber: row['featureNumber'],
     			featureName: row['featureName'],
+                projectName: row['projectName'],
     			totalStartDay: row['featureTotalStart'],
     			totalEndDay: row['featureTotalEnd'],
     			adds: row['featureTotalAdd'],
@@ -1146,7 +1482,9 @@ Ext.define('CustomApp', {
     	this._byFeatureRows = rows;
 
     	var store = Ext.create('Ext.data.JsonStore', {
-			fields: ['featureName', 
+			fields: ['featureNumber', 
+                    'featureName', 
+                    'projectName',
                     'totalStartDay',
                     'totalEndDay',
                     'adds',
@@ -1160,6 +1498,182 @@ Ext.define('CustomApp', {
     },
 
 
+
+    _createSummaryDefectStore: function() {
+        var rows = [];
+
+        var defectTotalStart = 0;
+        var defectTotalEnd = 0;
+        var defectTotalDelete = 0;
+        var defectTotalAdd = 0;
+
+        var initIds = [];
+        var endIds = [];
+
+        var allDefects = new Ext.util.MixedCollection();
+        
+
+        _.each(this._initDefects, function(defect) {
+            //console.log('feature:', feature);
+            var defectId = defect.get('ObjectID');
+            initIds.push(defectId);
+
+            //console.log('init f, LeafPoint:', feature.get('LeafStoryPlanEstimateTotal'));
+
+            if (allDefects.containsKey(defectId)) {
+                var mappedDefect = allDefects.get(defectId);
+                mappedDefect['defectTotalStart'] = defect.get('PlanEstimate');
+
+                var endDefect = this._getEndFeatureByObjectId(defectId, this._endFeatures);
+                
+                if (endDefect) {
+                    var endDefectPoints = endDefect.get('PlanEstimate');
+                    if (endDefectPoints > defect.get('PlanEstimate')) {
+                        mappedDefect['defectTotalAdd'] = (endDefectPoints - defect.get('PlanEstimate'));
+                    } else {
+                        mappedDefect['defectTotalDelete'] = (defect.get('PlanEstimate') - endDefectPoints);
+                    }
+                } else {
+                    //defect removed, thus, completed delete
+                    mappedDefect['defectTotalDelete'] = defect.get('PlanEstimate');
+                }
+            } else {
+                var row = this._getDefectRow();
+                row['defectNumber'] = defect.get('FormattedID');
+                row['defectName'] = defect.get('Name');
+                row['defectTotalStart'] = defect.get('PlanEstimate');
+                row['projectName'] = defect.get('Project').Name;
+
+
+                var endDefect = this._getEndFeatureByObjectId(defectId, this._endDefects);
+                
+                if (endDefect) {
+                    var endDefectPoints = endDefect.get('PlanEstimate');
+                    if (endDefectPoints > defect.get('PlanEstimate')) {
+                        row['defectTotalAdd'] = (endDefectPoints - defect.get('PlanEstimate'));
+                    } else {
+                        row['defectTotalDelete'] = (defect.get('PlanEstimate') - endDefectPoints);
+                    }
+                } else {
+                    //defect removed, thus, completed delete
+                    row['defectTotalDelete'] = defect.get('PlanEstimate');
+                }
+
+                //console.log('row init:', row);
+                allDefects.add(defectId, row);
+            }
+
+
+        }, this);
+
+
+        _.each(this._endDefects, function(defect) {
+            //console.log('feature:', feature);
+            var defectId = defect.get('ObjectID');
+            endIds.push(defectId);
+
+
+            if (allDefects.containsKey(defectId)) {
+                var mappedDefect = allDefects.get(defectId);
+                mappedDefect['defectTotalEnd'] = defect.get('PlanEstimate');
+
+                var initDefect = this._getInitFeatureByObjectId(defectId, this._initDefects);
+                
+                if (initDefect) {
+                    var initDefectPoints = initDefect.get('PlanEstimate');
+                    if (initDefectPoints > defect.get('PlanEstimate')) {
+                        mappedDefect['defectTotalDelete'] = (initDefectPoints - defect.get('PlanEstimate'));
+                    } else {
+                        mappedDefect['defectTotalAdd'] = (defect.get('PlanEstimate') - initDefectPoints);
+                    }
+                } else {
+                    //defect removed, thus, completed delete
+                    mappedDefect['defectTotalAdd'] = defect.get('PlanEstimate');
+                }
+            } else {    
+                var row = this._getDefectRow();
+                row['defectNumber'] = defect.get('FormattedID');
+                row['defectName'] = defect.get('Name');
+                row['defectTotalEnd'] = defect.get('PlanEstimate');
+                row['projectName'] = defect.get('Project').Name;
+
+                var initDefect = this._getInitFeatureByObjectId(defectId, this._initDefects);
+                
+                if (initDefect) {
+                    var initDefectPoints = initDefect.get('PlanEstimate');
+                    if (initDefectPoints > defect.get('PlanEstimate')) {
+                        row['defectTotalDelete'] = (initDefectPoints - defect.get('PlanEstimate'));
+                    } else {
+                        row['defectTotalAdd'] = (defect.get('PlanEstimate') - initDefectPoints);
+                    }
+                } else {
+                    //defect removed, thus, completed delete
+                    row['defectTotalAdd'] = defect.get('PlanEstimate');
+                }
+
+                allDefects.add(defectId, row);
+            }
+        }, this);
+
+
+        allDefects.eachKey(function(defectId, row) {
+            // console.log('map features:', featureId, row);
+
+            var totalStart = row['defectTotalStart'];
+            var totalEnd = row['defectTotalEnd'];
+
+            
+            var adds = row['defectTotalAdd'];
+
+            var percChange = 0;
+
+            if (totalStart === 0) {
+                totalStart = 1;
+                percChange = (((totalEnd / totalStart)) *100).toFixed(2) + '%';
+            } else {
+                if (totalEnd < totalStart) {
+                    percChange = '-' + ((1 - (totalEnd / totalStart))  *100).toFixed(2) + '%';
+                } else if (totalStart  < totalEnd) {
+                    percChange = ((adds / totalStart)  *100).toFixed(2) + '%';
+                }
+            }
+
+
+            var defectRow = {
+                defectNumber: row['defectNumber'],
+                defectName: row['defectName'],
+                projectName: row['projectName'],
+                totalStartDay: row['defectTotalStart'],
+                totalEndDay: row['defectTotalEnd'],
+                adds: row['defectTotalAdd'],
+                deletes: row['defectTotalDelete'],
+                percChange: percChange
+            };
+
+            rows.push(defectRow);
+
+        }, this);
+
+        console.log('rows', rows);
+        this._byDefectRows = rows;
+
+        var store = Ext.create('Ext.data.JsonStore', {
+            fields: ['defectNumber', 
+                    'defectName', 
+                    'projectName',
+                    'totalStartDay',
+                    'totalEndDay',
+                    'adds',
+                    'deletes',
+                    'percChange']
+        });
+
+        store.loadData(rows);
+
+        return store;
+    },
+
+
     _calculateTotalEndDay: function(projectName, mapProjectEnd) {
     	if (!mapProjectEnd.containsKey(projectName)) {
     		return 0;
@@ -1167,8 +1681,15 @@ Ext.define('CustomApp', {
     		var total = 0;
 
     		_.each(mapProjectEnd.get(projectName), function(feature) {
-				total += feature.get('LeafStoryPlanEstimateTotal');
+                var type = feature.get('FormattedID').startsWith('F') ? 'PortfolioItem/Feature' : 'Defect';
+                if (type === "PortfolioItem/Feature") {
+                    total += feature.get('LeafStoryPlanEstimateTotal');
+                } else {
+                    total += feature.get('PlanEstimate');
+                }
     		}, this);
+
+            console.log('calc total at end Day:', total);
 
     		return total;
     	}
