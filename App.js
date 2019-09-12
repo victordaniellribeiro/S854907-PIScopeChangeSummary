@@ -1104,6 +1104,34 @@ Ext.define('CustomApp', {
 
         }, this);
 
+
+
+        //Calculate total
+        var rowTotal = {
+                projectName: 'Total',
+                totalStartDay: 0,
+                totalEndDay: 0,
+                adds: 0,
+                deletes: 0,
+                percChange: 0
+        };
+
+        _.each(rows, function(row) {
+
+            rowTotal['totalStartDay'] += row['totalStartDay'];
+            rowTotal['totalEndDay'] += row['totalEndDay'];
+            rowTotal['adds'] += row['adds'];
+            rowTotal['deletes'] += row['deletes'];
+
+            
+          
+        }, this);
+
+        var percStr = (((rowTotal['totalEndDay'] / rowTotal['totalStartDay']) - 1) * 100).toFixed(2) + '%';
+        rowTotal['percChange'] = percStr;
+
+        rows.push(rowTotal);
+
     	console.log('rows', rows);
     	this._byProjectRows = rows;
 
